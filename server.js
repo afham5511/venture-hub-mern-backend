@@ -1,15 +1,23 @@
 const express = require('express');
-const { connectDB } = require('./utils/mongoDBConnection');
-
+var db = require('./utils/mongoDBConnection.js');
+const cors = require('cors')
 const app = express();
 
-connectDB();
+
+app.use(express.json());
+app.use(cors())
 
 
 const port = 3000;
 const authRoute = require('./routes/auth.js')
 
 app.use('/api/auth',authRoute)
+
+
+db.connect((err)=>{
+  if(err) console.log('err is: '+ err);
+  else console.log('databse connected');
+})
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
