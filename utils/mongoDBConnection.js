@@ -1,7 +1,7 @@
 const { MongoClient } = require('mongodb');
-const { moveMessagePortToContext } = require('worker_threads');
+const mongoose = require('mongoose');
 
-const mongoURI = 'mongodb+srv://afhamali5477:afham@cluster0.avyta.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
+  const mongoURI = 'mongodb+srv://afhamali5477:afham@cluster0.avyta.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0/';
 
 const state = {}
 
@@ -20,6 +20,12 @@ module.exports.connect = async function (done) {
   done()
 
 }
+
+
+mongoose.connect(mongoURI,{dbName})
+    .then(() => {
+        console.log("Connected Established!")
+    })
 
 module.exports.get= function (){
   return state.db
