@@ -3,9 +3,6 @@ const express = require('express');
 const Category = require('../models/Category');
 const router = express.Router();
 
-
-
-
 router.get('/', async (req, res) => {
     try {
         const categories = await Category.find({});
@@ -16,7 +13,7 @@ router.get('/', async (req, res) => {
 });
 router.get('/:id', async (req, res) => {
     try {
-        const categories = await Category.findOne(req.params.id);
+        const categories = await Category.findOne({_id:req.params.id});
         res.json(categories);
     } catch (err) {
         res.status(500).json({ message: err.message });
