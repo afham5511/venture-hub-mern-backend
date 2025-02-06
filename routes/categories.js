@@ -14,6 +14,14 @@ router.get('/', async (req, res) => {
         res.status(500).json({ message: err.message });
     }
 });
+router.get('/:id', async (req, res) => {
+    try {
+        const categories = await Category.findOne(req.params.id);
+        res.json(categories);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
 
 router.post('/', async (req, res) => {
     try {
