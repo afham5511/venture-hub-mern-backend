@@ -12,7 +12,7 @@ router.post('/register',async (req, res) => {
       if(userExist){
         return res.status(400).json({ message: 'user alredy exist please login' });
       }
-      await db.get().collection('users').insertOne({ phoneNumber, fname, surName, password })
+      await db.get().collection('users').insertOne({ phoneNumber, fname, surName, password,role:"user" })
 
       res.status(201).json({ message: 'User registered successfully' });
     } catch (error) {

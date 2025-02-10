@@ -11,9 +11,11 @@ app.use(cors())
 const port = 3000;
 const authRoute = require('./routes/auth.js')
 const categoriesRoute = require('./routes/categories.js')
+const productRoute = require('./routes/product.js')
 
 app.use('/api/auth',authRoute)
 app.use('/api/categories',categoriesRoute)
+app.use('/api/product',productRoute)
 
 
 db.connect((err)=>{
