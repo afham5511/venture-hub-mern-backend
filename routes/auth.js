@@ -2,7 +2,7 @@ const express = require('express');
 const db  = require('../utils/mongoDBConnection');
 const router = express.Router();
 
-router.post('/register',async (req, res) => {
+router.post('/signup',async (req, res) => {
     try {
         const { phoneNumber, fname, surName, password } = req?.body;
       if (!phoneNumber || !fname || !password || !surName ) {
@@ -13,8 +13,9 @@ router.post('/register',async (req, res) => {
         return res.status(400).json({ message: 'user alredy exist please login' });
       }
       await db.get().collection('users').insertOne({ phoneNumber, fname, surName, password,role:"user" })
+      const user= await  db.get().collection('users').findOne({phoneNumber});
 
-      res.status(201).json({ message: 'User registered successfully' });
+      res.status(201).json({ message: 'User registered successfully', user });
     } catch (error) {
       console.error('Error registering user:', error.message);
       res.status(500).json({ message: 'Internal server error' });

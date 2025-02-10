@@ -92,7 +92,7 @@ router.delete('/:categoryId/items/:itemId', async (req, res) => {
         if (!category) {
             return res.status(404).json({ message: 'Category not found' });
         }
-        // Filter out the item with the matching id
+       
         category.items = category.items.filter(
             (item) => item.id.toString() !== req.params.itemId
         );

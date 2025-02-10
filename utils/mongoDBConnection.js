@@ -8,7 +8,7 @@ const state = {}
 const dbName = process.env.DATABASE_NAME || 'ventureHub'
 const client = new MongoClient(mongoURI)
 module.exports.connect = async function (done) {
-  // Use connect method to connect to the server
+ 
   await client.connect((err,data)=>{
       
       if(err) return done(err)

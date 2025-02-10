@@ -1,39 +1,39 @@
 const express = require('express');
-const { ObjectId } = require('mongodb');  // Import ObjectId from 'mongodb.get'
+const { ObjectId } = require('mongodb'); 
 const db = require('../utils/mongoDBConnection.js');
 const router = express.Router();
 
 router.get('/cart/:userId', async (req, res) => {
     try {
-        const { userId } = req.params;  // Extract userId from URL
+        const { userId } = req.params; 
         const cart = await db.get().collection('cart').aggregate([
-            { '$match': { 'userId': new ObjectId(userId) } },  // Match by userId
-            { '$unwind': { 'path': '$products' } },  // Unwind the products array
+            { '$match': { 'userId': new ObjectId(userId) } },  
+            { '$unwind': { 'path': '$products' } }, 
             { '$lookup': { 
                 'from': 'categories', 
                 'localField': 'products.productId', 
                 'foreignField': 'items._id', 
                 'as': 'category' 
             }},
-            { '$unwind': { 'path': '$category' } }  // Unwind category array to match the product
+            { '$unwind': { 'path': '$category' } } 
         ]).toArray();
 
         if (!cart || cart.length === 0) {
             return res.status(404).json({ message: "Cart not found" });
         }
 
-        // Filter products that exist in the category's items array
+       
         const cartItems = cart.flatMap(x => 
             x.category.items
                 .filter(item => item._id.equals(x.products.productId))
                 .map(item => ({
-                    ...item,  // Product details
-                    qty: x.products.qty  // Add the quantity from the cart
+                    ...item, 
+                    qty: x.products.qty 
                 }))
         );
 
 
-        // Return filtered cart items
+    
         res.status(200).json({ products: cartItems });
     } catch (error) {
         console.error(error);
@@ -61,17 +61,17 @@ router.post('/cart', async (req, res) => {
             if (isItemInCart) {
                 await db.get().collection('cart').updateOne(
                     { userId: userObjectId, 'products.productId': productId },
-                    { $inc: { 'products.$.qty': 1 } }  // Increment the qty field
+                    { $inc: { 'products.$.qty': 1 } }  
                 );
             } else {
-                // If the product doesn't exist, push it into the products array with qty 1
+               
                 await db.get().collection('cart').updateOne(
                     { userId: userObjectId },
                     { $push: { products: { productId, qty: 1 } } }
                 );
             }
         } else {
-            // If the cart doesn't exist, create a new cart with the productId and qty 1
+            
             await db.get().collection('cart').insertOne({
                 userId: userObjectId,
                 products: [{ productId, qty: 1 }]
@@ -85,13 +85,13 @@ router.post('/cart', async (req, res) => {
     }
 });
 
-// Route for deleting a product from the cart
+
 router.delete('/cart', async (req, res) => {
     try {
-        const { userId, productId } = req.body;
+        const { userId, productId } = req.query;
         const userObjectId = new ObjectId(userId);
 
-        // Check if the cart contains the product
+       
         const isQty = await db.get().collection('cart').findOne({ 
             userId: userObjectId, 
             'products.productId': new ObjectId(productId) 
@@ -105,12 +105,12 @@ router.delete('/cart', async (req, res) => {
             if (qty.qty > 1) {
                 result = await db.get().collection('cart').updateOne(
                     { userId: userObjectId, 'products.productId': new ObjectId(productId) },
-                    { $inc: { 'products.$.qty': -1 } }  // Decrement the qty by 1
+                    { $inc: { 'products.$.qty': -1 } }  
                 );
             } else {
                 result = await db.get().collection('cart').updateOne(
                     { userId: userObjectId },
-                    { $pull: { products: { productId: new ObjectId(productId) } } }  // Remove the product from the array
+                    { $pull: { products: { productId: new ObjectId(productId) } } } 
                 );
             }
         }
